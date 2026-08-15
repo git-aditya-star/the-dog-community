@@ -1,0 +1,31 @@
+# Local tooling / notes
+.project-notes/
+.project-inspector/
+.project-inspector-off
+.claude/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Uploaded media
+uploads/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
