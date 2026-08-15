@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.db import init_db
-from app.routers import auth, channels, uploads
+from app.routers import auth, channels, dogs, uploads
 from app.routers.uploads import UPLOAD_DIR
 from app.ws import router as ws_router
 
@@ -30,6 +30,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(channels.router)
 app.include_router(uploads.router)
+app.include_router(dogs.router)
 app.include_router(ws_router)
 
 # the mount needs the directory to exist before the first request

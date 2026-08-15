@@ -43,6 +43,9 @@ class Dog(Base):
         DateTime(timezone=True), default=utcnow, onupdate=utcnow
     )
 
+    # joined so the whole rail is one query
+    owner: Mapped[User] = relationship(lazy="joined")
+
 
 class Channel(Base):
     __tablename__ = "channels"

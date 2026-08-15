@@ -27,7 +27,13 @@
   background: none;
   color: $muted;
   display: block;
+  width: 100%;
   text-align: center;
   padding: 1.1rem 0.9rem;
   font-size: 0.87rem;
+
+  &:hover {
+    border-color: $rust;
+    color: $rust;
+  }
 }

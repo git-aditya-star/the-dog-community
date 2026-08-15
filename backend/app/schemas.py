@@ -48,6 +48,21 @@ class UploadOut(BaseModel):
     url: str
 
 
+class DogIn(BaseModel):
+    name: str = Field(min_length=1, max_length=80)
+    photo_url: str = Field(max_length=255)
+
+
+class DogOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    breed: str | None
+    photo_url: str | None
+    owner: UserOut
+
+
 class MessageOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

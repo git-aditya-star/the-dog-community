@@ -1,0 +1,39 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(46, 36, 29, 0.34);
+
+  &__panel {
+    @include card;
+    width: 100%;
+    max-width: 340px;
+    padding: 1.3rem;
+    box-shadow: $shadow;
+  }
+
+  &__title {
+    font-family: $serif;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  &__hint {
+    color: $muted;
+    font-size: 0.82rem;
+    margin-bottom: 1rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.9rem;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
