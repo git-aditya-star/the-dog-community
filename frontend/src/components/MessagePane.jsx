@@ -118,6 +118,7 @@ export default function MessagePane({ channel }) {
                   ) : (
                     <Avatar
                       name={m.user.display_name}
+                      seed={m.user.username}
                       url={m.user.avatar_url}
                       isBot={m.user.is_bot}
                     />

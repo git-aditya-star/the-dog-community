@@ -54,7 +54,13 @@ export default function Sidebar({ publics, dms, people, onStartDm }) {
           ) : (
             people.map((p) => (
               <button key={p.id} className="picker__row" onClick={() => pick(p.id)}>
-                <Avatar name={p.display_name} url={p.avatar_url} isBot={p.is_bot} small />
+                <Avatar
+                  name={p.display_name}
+                  seed={p.username}
+                  url={p.avatar_url}
+                  isBot={p.is_bot}
+                  small
+                />
                 <span className="picker__name">{p.display_name}</span>
                 <span className="picker__handle">@{p.username}</span>
               </button>
@@ -69,13 +75,19 @@ export default function Sidebar({ publics, dms, people, onStartDm }) {
           to={`/d/${c.other.username}`}
           className={({ isActive }) => `sidebar__link${isActive ? ' is-active' : ''}`}
         >
-          <Avatar name={c.other.display_name} url={c.other.avatar_url} isBot={c.other.is_bot} small />
+          <Avatar
+            name={c.other.display_name}
+            seed={c.other.username}
+            url={c.other.avatar_url}
+            isBot={c.other.is_bot}
+            small
+          />
           {c.other.display_name}
         </NavLink>
       ))}
 
       <div className="sidebar__me">
-        <Avatar name={user.display_name} url={user.avatar_url} />
+        <Avatar name={user.display_name} seed={user.username} url={user.avatar_url} />
         <div>
           <div className="sidebar__me-name">{user.display_name}</div>
           <div className="sidebar__me-handle">@{user.username}</div>

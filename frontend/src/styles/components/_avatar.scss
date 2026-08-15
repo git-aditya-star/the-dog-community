@@ -26,6 +26,13 @@
     font-size: 1.05rem;
   }
 
+  // one tint per member; Avatar.jsx picks the index from the username
+  @each $tint in $avatar-tints {
+    &--c#{index($avatar-tints, $tint) - 1} {
+      background: $tint;
+    }
+  }
+
   // Barkley wears the rust ring so he reads as staff, not a stranger.
   &--bot {
     background: $rust;

@@ -12,6 +12,11 @@ $bark:       #3a2c23;
 $bark-soft:  #6a564a;
 $moss:       #6b7a52;
 
+// one per member, picked by a hash of their username. no rust in here —
+// that stays the accent. all eight clear 4.5:1 against the white initial.
+$avatar-tints: #8f6a2e, #5f6f45, #7c5a4a, #8a5b6e, #4e6b73, #6d6152, #6a5b8a,
+  #4f7060;
+
 $serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
 $sans:  'Inter Variable', system-ui, 'Segoe UI', sans-serif;
 
