@@ -42,7 +42,9 @@ async def send_to(user_ids: list[int], payload: dict) -> None:
                 unregister(user_id, sock)
 
 
-def store(user_id: int, channel_id: int, body: str) -> tuple[Channel, dict] | None:
+def store(
+    user_id: int, channel_id: int, body: str, image_url: str | None
+) -> tuple[Channel, dict] | None:
     """Persist one message, or None if the channel is not the user's to post in."""
     db = SessionLocal()
     try:
@@ -52,7 +54,12 @@ def store(user_id: int, channel_id: int, body: str) -> tuple[Channel, dict] | No
         if channel.kind == "dm" and user_id not in (channel.user_a_id, channel.user_b_id):
             return None
 
-        message = Message(channel_id=channel_id, user_id=user_id, body=body)
+        message = Message(
+            channel_id=channel_id,
+            user_id=user_id,
+            body=body or None,
+            image_url=image_url,
+        )
         db.add(message)
         db.commit()
         # session is still open, so the author loads for the payload
@@ -87,10 +94,14 @@ async def socket(ws: WebSocket, token: str = ""):
                 continue
             body = (data.get("body") or "").strip()[:MAX_BODY]
             channel_id = data.get("channel_id")
-            if not body or not isinstance(channel_id, int):
+            image_url = data.get("image_url")
+            # only paths this server handed out, never an arbitrary url
+            if not isinstance(image_url, str) or not image_url.startswith("/uploads/"):
+                image_url = None
+            if (not body and not image_url) or not isinstance(channel_id, int):
                 continue
 
-            stored = store(user_id, channel_id, body)
+            stored = store(user_id, channel_id, body, image_url)
             if stored is None:
                 continue
             channel, payload = stored

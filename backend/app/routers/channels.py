@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models import Channel, Message, User
-from app.schemas import ChannelOut, MessageOut
+from app.schemas import ChannelOut, DmIn, MessageOut, UserOut
 from app.security import current_user
 
 router = APIRouter(prefix="/api", tags=["channels"])
@@ -22,6 +22,21 @@ def visible_channel(db: Session, user: User, channel_id: int) -> Channel:
     return channel
 
 
+def as_out(db: Session, channel: Channel, me_id: int) -> ChannelOut:
+    """A channel as one viewer sees it — a dm carries the other person."""
+    other = None
+    if channel.kind == "dm":
+        other_id = channel.user_b_id if channel.user_a_id == me_id else channel.user_a_id
+        other = db.get(User, other_id)
+    return ChannelOut(
+        id=channel.id,
+        kind=channel.kind,
+        name=channel.name,
+        topic=channel.topic,
+        other=UserOut.model_validate(other) if other else None,
+    )
+
+
 @router.get("/channels", response_model=list[ChannelOut])
 def list_channels(user: User = Depends(current_user), db: Session = Depends(get_db)):
     rows = db.scalars(
@@ -35,7 +50,41 @@ def list_channels(user: User = Depends(current_user), db: Session = Depends(get_
         )
         .order_by(Channel.id)
     ).all()
-    return rows
+    return [as_out(db, c, user.id) for c in rows]
+
+
+@router.get("/users", response_model=list[UserOut])
+def list_users(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    return db.scalars(
+        select(User).where(User.id != user.id).order_by(User.display_name)
+    ).all()
+
+
+@router.post("/dms", response_model=ChannelOut)
+def open_dm(
+    payload: DmIn,
+    user: User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    """Get-or-create the dm with one other person."""
+    other = db.get(User, payload.user_id)
+    if other is None or other.id == user.id:
+        raise HTTPException(status_code=404, detail="No such person")
+
+    # lower id first, so the partial unique index prevents duplicates
+    a_id, b_id = sorted((user.id, other.id))
+    channel = db.scalar(
+        select(Channel).where(
+            Channel.kind == "dm",
+            Channel.user_a_id == a_id,
+            Channel.user_b_id == b_id,
+        )
+    )
+    if channel is None:
+        channel = Channel(kind="dm", user_a_id=a_id, user_b_id=b_id)
+        db.add(channel)
+        db.commit()
+    return as_out(db, channel, user.id)
 
 
 @router.get("/channels/{channel_id}/messages", response_model=list[MessageOut])

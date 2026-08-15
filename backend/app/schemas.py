@@ -36,6 +36,16 @@ class ChannelOut(BaseModel):
     kind: str
     name: str | None
     topic: str | None
+    # the person on the other side, for dms only
+    other: UserOut | None = None
+
+
+class DmIn(BaseModel):
+    user_id: int
+
+
+class UploadOut(BaseModel):
+    url: str
 
 
 class MessageOut(BaseModel):
