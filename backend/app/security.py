@@ -28,6 +28,14 @@ def create_token(user_id: int) -> str:
     return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
 
 
+def decode_token(token: str) -> int | None:
+    try:
+        payload = jwt.decode(token, settings.jwt_secret, algorithms=["HS256"])
+        return int(payload["sub"])
+    except (jwt.PyJWTError, KeyError, ValueError):
+        return None
+
+
 def current_user(
     creds: HTTPAuthorizationCredentials | None = Depends(bearer),
     db: Session = Depends(get_db),
@@ -37,10 +45,9 @@ def current_user(
     )
     if creds is None:
         raise unauthorized
-    try:
-        payload = jwt.decode(creds.credentials, settings.jwt_secret, algorithms=["HS256"])
-        user_id = int(payload["sub"])
-    except (jwt.PyJWTError, KeyError, ValueError):
+
+    user_id = decode_token(creds.credentials)
+    if user_id is None:
         raise unauthorized
 
     user = db.get(User, user_id)

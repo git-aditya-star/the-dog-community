@@ -9,7 +9,7 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
 
@@ -50,6 +50,7 @@ class Channel(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     kind: Mapped[str] = mapped_column(String(10))  # 'public' | 'dm'
     name: Mapped[str | None] = mapped_column(String(80), default=None)
+    topic: Mapped[str | None] = mapped_column(String(140), default=None)
     user_a_id: Mapped[int | None] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), default=None
     )
@@ -80,6 +81,9 @@ class Message(Base):
     body: Mapped[str | None] = mapped_column(Text, default=None)
     image_url: Mapped[str | None] = mapped_column(String(255), default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    # joined so the 50-message history is one query, not 51
+    user: Mapped[User] = relationship(lazy="joined")
 
     # postgres scans a btree backwards, so this serves the
     # newest-50-first history query without a DESC index

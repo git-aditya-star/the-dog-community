@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -24,4 +26,24 @@ class UserOut(BaseModel):
 
 class TokenOut(BaseModel):
     access_token: str
+    user: UserOut
+
+
+class ChannelOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    kind: str
+    name: str | None
+    topic: str | None
+
+
+class MessageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    channel_id: int
+    body: str | None
+    image_url: str | None
+    created_at: datetime
     user: UserOut
