@@ -24,6 +24,10 @@ dist/
 # Uploaded media
 uploads/
 
+# Local-only demo tooling (screenshots in docs/ are committed)
+backend/seed.py
+frontend/shots.mjs
+
 # Editor / OS
 .vscode/
 .idea/
