@@ -46,8 +46,30 @@
   background: $card;
   border: 1px solid $line;
   border-radius: $radius-lg;
-  padding: 0.45rem 0.45rem 0.45rem 1rem;
+  padding: 0.45rem 0.45rem 0.45rem 0.6rem;
   box-shadow: $shadow-sm;
+
+  &__clip {
+    flex: 0 0 auto;
+    background: none;
+    border: 0;
+    padding: 0.25rem 0.4rem;
+    font-size: 1.05rem;
+    line-height: 1;
+    border-radius: 999px;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+      background: $paper-deep;
+    }
+  }
+
+  &__problem {
+    color: $rust-dark;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
 
   &__input {
     flex: 1;

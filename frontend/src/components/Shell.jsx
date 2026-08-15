@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import DogRail from './DogRail'
 import MessagePane from './MessagePane'
@@ -10,22 +10,40 @@ import { SocketProvider } from '../socket'
 
 export default function Shell() {
   const { token } = useAuth()
-  const { slug } = useParams()
+  // one of the two is set, depending on which route matched
+  const { slug, username } = useParams()
+  const navigate = useNavigate()
   const [channels, setChannels] = useState([])
+  const [people, setPeople] = useState([])
 
   useEffect(() => {
     api('/api/channels', { token })
       .then(setChannels)
       .catch(() => setChannels([]))
+    api('/api/users', { token })
+      .then(setPeople)
+      .catch(() => setPeople([]))
   }, [token])
 
-  // urls carry the channel name; everything below works in ids
-  const channel = channels.find((c) => c.name === slug) || channels[0] || null
+  const publics = channels.filter((c) => c.kind === 'public')
+  const dms = channels.filter((c) => c.kind === 'dm')
+
+  // urls carry a channel name or a person's handle; everything below works in ids
+  const channel = username
+    ? dms.find((c) => c.other?.username === username) || null
+    : publics.find((c) => c.name === slug) || publics[0] || null
+
+  const startDm = async (userId) => {
+    const dm = await api('/api/dms', { method: 'POST', body: { user_id: userId }, token })
+    // the row may already have existed, so add it only if it is new
+    setChannels((prev) => (prev.some((c) => c.id === dm.id) ? prev : [...prev, dm]))
+    navigate(`/d/${dm.other.username}`)
+  }
 
   return (
     <SocketProvider>
       <div className="shell">
-        <Sidebar channels={channels} />
+        <Sidebar publics={publics} dms={dms} people={people} onStartDm={startDm} />
         <MessagePane channel={channel} />
         <DogRail />
       </div>

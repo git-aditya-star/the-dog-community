@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import Avatar from './Avatar'
-import { api } from '../api'
+import { api, API_BASE, upload } from '../api'
 import { useAuth } from '../auth'
 import { useSocket } from '../socket'
 
@@ -14,7 +14,9 @@ export default function MessagePane({ channel }) {
   const { send, subscribe } = useSocket()
   const [messages, setMessages] = useState([])
   const [draft, setDraft] = useState('')
+  const [problem, setProblem] = useState('')
   const foot = useRef(null)
+  const file = useRef(null)
   const channelId = channel?.id
 
   useEffect(() => {
@@ -53,13 +55,30 @@ export default function MessagePane({ channel }) {
     if (send({ type: 'send', channel_id: channelId, body })) setDraft('')
   }
 
+  // picking a file posts it straight away — no preview, no caption
+  const attach = async (e) => {
+    const picked = e.target.files?.[0]
+    e.target.value = ''
+    if (!picked || !channelId) return
+    setProblem('')
+    try {
+      const { url } = await upload(picked, token)
+      send({ type: 'send', channel_id: channelId, image_url: url })
+    } catch (err) {
+      setProblem(err.message)
+    }
+  }
+
   if (!channel) return <section className="pane" />
+
+  const isDm = channel.kind === 'dm'
+  const title = isDm ? channel.other.display_name : `#${channel.name}`
 
   return (
     <section className="pane">
       <header className="pane__top">
-        <span className="pane__title">#{channel.name}</span>
-        <span className="pane__topic">{channel.topic}</span>
+        <span className="pane__title">{title}</span>
+        <span className="pane__topic">{isDm ? `@${channel.other.username}` : channel.topic}</span>
       </header>
 
       <div className="pane__body">
@@ -68,7 +87,9 @@ export default function MessagePane({ channel }) {
             <div className="empty__mark">🦴</div>
             <h2>Nobody has barked yet</h2>
             <p className="empty__text">
-              This is the beginning of #{channel.name}. Messages will land here.
+              {isDm
+                ? `Just you and ${channel.other.display_name} here. Say hello.`
+                : `This is the beginning of #${channel.name}. Messages will land here.`}
             </p>
           </div>
         ) : (
@@ -95,7 +116,17 @@ export default function MessagePane({ channel }) {
                       <span className="msg__time">{clock(m.created_at)}</span>
                     </div>
                   )}
-                  <p className="msg__body">{m.body}</p>
+                  {m.body && <p className="msg__body">{m.body}</p>}
+                  {m.image_url && (
+                    <a
+                      className="msg__shot"
+                      href={API_BASE + m.image_url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <img src={API_BASE + m.image_url} alt="Shared by the pack" />
+                    </a>
+                  )}
                 </div>
               </article>
             )
@@ -105,10 +136,26 @@ export default function MessagePane({ channel }) {
       </div>
 
       <footer className="pane__foot">
+        {problem && <p className="composer__problem">{problem}</p>}
         <form className="composer" onSubmit={submit}>
           <input
+            ref={file}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={attach}
+          />
+          <button
+            className="composer__clip"
+            type="button"
+            title="Send a photo"
+            onClick={() => file.current?.click()}
+          >
+            📎
+          </button>
+          <input
             className="composer__input"
-            placeholder={`Message #${channel.name}`}
+            placeholder={`Message ${isDm ? `@${channel.other.username}` : title}`}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />

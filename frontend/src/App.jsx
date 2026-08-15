@@ -16,6 +16,14 @@ export default function App() {
           </RequireAuth>
         }
       />
+      <Route
+        path="/d/:username"
+        element={
+          <RequireAuth>
+            <Shell />
+          </RequireAuth>
+        }
+      />
       <Route path="*" element={<Navigate to="/c/general" replace />} />
     </Routes>
   )

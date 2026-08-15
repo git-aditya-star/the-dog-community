@@ -29,8 +29,65 @@
 
 .sidebar__label {
   @include eyebrow;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   color: rgba(244, 235, 225, 0.5);
   padding: 0.9rem 0.6rem 0.45rem;
+}
+
+.sidebar__add {
+  background: none;
+  border: 0;
+  padding: 0 0.2rem;
+  font-size: 1rem;
+  line-height: 1;
+  color: rgba(244, 235, 225, 0.55);
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.picker {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: $radius-sm;
+  padding: 0.25rem;
+  margin-bottom: 0.35rem;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: none;
+    border: 0;
+    padding: 0.35rem 0.4rem;
+    border-radius: $radius-sm;
+    color: rgba(244, 235, 225, 0.82);
+    text-align: left;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: #fff;
+    }
+  }
+
+  &__name {
+    font-size: 0.87rem;
+  }
+
+  &__handle {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: rgba(244, 235, 225, 0.45);
+  }
+
+  &__empty {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.8rem;
+    color: rgba(244, 235, 225, 0.5);
+  }
 }
 
 .sidebar__link {

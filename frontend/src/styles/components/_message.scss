@@ -61,4 +61,17 @@
     overflow-wrap: anywhere;
     white-space: pre-wrap;
   }
+
+  &__shot {
+    display: block;
+    max-width: 320px;
+    margin-top: 0.4rem;
+
+    img {
+      display: block;
+      width: 100%;
+      border: 1px solid $line;
+      border-radius: $radius;
+    }
+  }
 }
