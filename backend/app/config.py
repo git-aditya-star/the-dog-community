@@ -20,9 +20,5 @@ class Settings(BaseSettings):
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
-    @property
-    def vision_provider(self) -> str:
-        return "gemini" if self.gemini_api_key else "ollama"
-
 
 settings = Settings()
