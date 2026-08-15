@@ -1,15 +1,18 @@
+import asyncio
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app import barkley
 from app.db import get_db
+from app.llm import describe_dog
 from app.models import Dog, User
 from app.routers.uploads import UPLOAD_DIR
 from app.schemas import DogIn, DogOut
 from app.security import current_user
-from app.vision import describe_dog
+from app.ws import connections, send_to
 
 router = APIRouter(prefix="/api", tags=["dogs"])
 
@@ -63,4 +66,9 @@ async def add_dog(
     db.add(dog)
     db.commit()
     db.refresh(dog)
-    return dog
+
+    out = DogOut.model_validate(dog)
+    # every open rail gets the card, not just the person who added it
+    await send_to(list(connections), {"type": "dog", **out.model_dump(mode="json")})
+    asyncio.create_task(barkley.welcome_dog(dog.id))
+    return out

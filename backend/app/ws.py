@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from sqlalchemy import select
 
@@ -106,6 +108,12 @@ async def socket(ws: WebSocket, token: str = ""):
                 continue
             channel, payload = stored
             await send_to(recipients(channel), payload)
+
+            # imported here because barkley imports this module for fan-out
+            from app import barkley
+
+            # he thinks for a few seconds; this socket must keep reading
+            asyncio.create_task(barkley.on_message(channel.id, user_id, body))
     except WebSocketDisconnect:
         pass
     finally:

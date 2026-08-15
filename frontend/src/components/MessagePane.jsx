@@ -13,6 +13,7 @@ export default function MessagePane({ channel }) {
   const { token } = useAuth()
   const { send, subscribe } = useSocket()
   const [messages, setMessages] = useState([])
+  const [typing, setTyping] = useState(false)
   const [draft, setDraft] = useState('')
   const [problem, setProblem] = useState('')
   const foot = useRef(null)
@@ -23,6 +24,7 @@ export default function MessagePane({ channel }) {
     if (!channelId) return undefined
     let stale = false
     setMessages([])
+    setTyping(false)
     api(`/api/channels/${channelId}/messages`, { token })
       .then((rows) => {
         if (!stale) setMessages(rows)
@@ -37,16 +39,20 @@ export default function MessagePane({ channel }) {
   useEffect(
     () =>
       subscribe((m) => {
-        if (m.type === 'message' && m.channel_id === channelId) {
+        if (m.channel_id !== channelId) return
+        if (m.type === 'message') {
           setMessages((prev) => [...prev, m])
+          // his message is the end of his turn, whatever the frames said
+          if (m.user.is_bot) setTyping(false)
         }
+        if (m.type === 'typing') setTyping(Boolean(m.on))
       }),
     [subscribe, channelId],
   )
 
   useEffect(() => {
     foot.current?.scrollIntoView({ block: 'end' })
-  }, [messages])
+  }, [messages, typing])
 
   const submit = (e) => {
     e.preventDefault()
@@ -131,6 +137,16 @@ export default function MessagePane({ channel }) {
               </article>
             )
           })
+        )}
+        {typing && (
+          <div className="typing">
+            <span className="typing__dots">
+              <i />
+              <i />
+              <i />
+            </span>
+            Barkley is thinking
+          </div>
         )}
         <div ref={foot} />
       </div>

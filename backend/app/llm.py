@@ -8,7 +8,7 @@ from app.config import settings
 
 TIMEOUT = 20.0
 
-PROMPT = (
+VISION_PROMPT = (
     "This is a photo of someone's pet dog. Reply with JSON and nothing else, "
     'in the form {"breed": "...", "notes": "..."}. "breed" is the most likely '
     'breed in two or three words. "notes" is two or three warm sentences about '
@@ -24,12 +24,28 @@ async def describe_dog(image: bytes, mime: str) -> tuple[str | None, str | None]
     """
     try:
         if settings.gemini_api_key:
-            text = await _gemini(image, mime)
+            text = await _gemini(VISION_PROMPT, image, mime)
         else:
-            text = await _ollama(image)
+            text = await _ollama(VISION_PROMPT, image)
     except Exception:
         return None, None
     return _parse(text)
+
+
+async def chat(prompt: str) -> str | None:
+    """One text completion.
+
+    Never raises either: a dead provider means Barkley stays quiet, not a
+    broken socket or a failed request.
+    """
+    try:
+        if settings.gemini_api_key:
+            text = await _gemini(prompt)
+        else:
+            text = await _ollama(prompt)
+    except Exception:
+        return None
+    return (text or "").strip() or None
 
 
 def _parse(text: str) -> tuple[str | None, str | None]:
@@ -52,41 +68,33 @@ def _parse(text: str) -> tuple[str | None, str | None]:
     return None, text
 
 
-async def _gemini(image: bytes, mime: str) -> str:
+async def _gemini(prompt: str, image: bytes | None = None, mime: str = "") -> str:
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
         f"{settings.gemini_model}:generateContent"
     )
-    body = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": PROMPT},
-                    {
-                        "inline_data": {
-                            "mime_type": mime,
-                            "data": base64.b64encode(image).decode(),
-                        }
-                    },
-                ]
-            }
-        ]
-    }
+    parts: list[dict] = [{"text": prompt}]
+    if image is not None:
+        parts.append(
+            {"inline_data": {"mime_type": mime, "data": base64.b64encode(image).decode()}}
+        )
+    body = {"contents": [{"parts": parts}]}
     async with httpx.AsyncClient(timeout=TIMEOUT) as client:
         res = await client.post(url, json=body, params={"key": settings.gemini_api_key})
         res.raise_for_status()
-        parts = res.json()["candidates"][0]["content"]["parts"]
-    return "".join(p.get("text", "") for p in parts)
+        out = res.json()["candidates"][0]["content"]["parts"]
+    return "".join(p.get("text", "") for p in out)
 
 
-async def _ollama(image: bytes) -> str:
+async def _ollama(prompt: str, image: bytes | None = None) -> str:
     body = {
         "model": settings.ollama_model,
-        "prompt": PROMPT,
-        "images": [base64.b64encode(image).decode()],
+        "prompt": prompt,
         "stream": False,
         "think": False,
     }
+    if image is not None:
+        body["images"] = [base64.b64encode(image).decode()]
     async with httpx.AsyncClient(timeout=TIMEOUT) as client:
         res = await client.post(f"{settings.ollama_url}/api/generate", json=body)
         res.raise_for_status()
