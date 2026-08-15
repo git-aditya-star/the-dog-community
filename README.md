@@ -34,15 +34,13 @@ and quietly interrupts if anyone mentions feeding their dog chocolate.
 
 ## Stack
 
-FastAPI · React (Vite) · PostgreSQL · one WebSocket · Gemini or Ollama for
-vision and chat. Auth is username/password with bcrypt and a JWT in
-localStorage.
+FastAPI · React (Vite) · PostgreSQL · one WebSocket · Gemini for vision and
+chat. Auth is username/password with bcrypt and a JWT in localStorage.
 
 ## Getting it running
 
-**You need:** PostgreSQL (running locally), Python 3.10+, Node 18+, and
-either a Google AI Studio API key or a signed-in Ollama account. See
-[the note on providers](#a-note-on-the-model) — there is no fully offline path.
+**You need:** PostgreSQL (running locally), Python 3.10+, Node 18+, and a
+Google AI Studio API key. See [the note on the model](#a-note-on-the-model).
 
 ### 1. Database
 
@@ -83,22 +81,23 @@ Open http://localhost:5173, create an account, and add your dog.
 | `JWT_SECRET` | Any long random string |
 | `JWT_EXPIRE_MINUTES` | Token lifetime. Defaults to a week |
 | `CORS_ORIGINS` | Comma-separated. Defaults to the Vite dev server |
-| `GEMINI_API_KEY` | Set it to use Google AI Studio. Leave blank for Ollama |
+| `GEMINI_API_KEY` | Your Google AI Studio key |
 | `GEMINI_MODEL` | Defaults to `gemini-3.5-flash-lite` |
-| `OLLAMA_URL` | Defaults to `http://localhost:11434` |
-| `OLLAMA_MODEL` | Defaults to `gemma4:cloud` |
 
 ### A note on the model
 
-The provider switch is one `if`: a `GEMINI_API_KEY` means Gemini, no key
-means Ollama. Both paths were built and measured — Gemini answers a photo in
-about 2.3 seconds, `gemma4:cloud` in about 3.
+`gemini-3.5-flash-lite` does both jobs: one vision pass when a dog is added,
+and every line Barkley says. It answers a photo in about 2.3 seconds, which is
+what makes breed detection something you can wait for on a form rather than a
+background job with a spinner.
 
-An honest caveat: the Ollama path here is a **cloud** model, which needs a
-signed-in Ollama account. A genuinely local vision model was tried and took
-44 seconds per photo, which is unusable while someone waits on a form. So the
-app needs one of the two accounts to detect breeds. Without either, nothing
-breaks — dogs simply arrive with no breed and Barkley stays quiet.
+That speed is the reason vision runs exactly once. The breed and description
+are written to the dog row and read back as text forever after, so Barkley
+never does image work while someone is waiting on a reply.
+
+An honest caveat: the app needs a key. Without one nothing breaks — dogs
+simply arrive with no breed and Barkley stays quiet — but the part worth
+seeing is the part that needs it.
 
 ## How it fits together
 
