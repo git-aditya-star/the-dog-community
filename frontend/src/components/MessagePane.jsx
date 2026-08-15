@@ -52,8 +52,10 @@ export default function MessagePane({ channel }) {
     [subscribe, channelId],
   )
 
+  const toFoot = () => foot.current?.scrollIntoView({ block: 'end' })
+
   useEffect(() => {
-    foot.current?.scrollIntoView({ block: 'end' })
+    toFoot()
   }, [messages, typing])
 
   const submit = (e) => {
@@ -136,7 +138,12 @@ export default function MessagePane({ channel }) {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <img src={API_BASE + m.image_url} alt="Shared by the pack" />
+                      {/* a photo lands after the scroll, so scroll again */}
+                      <img
+                        src={API_BASE + m.image_url}
+                        alt="Shared by the pack"
+                        onLoad={toFoot}
+                      />
                     </a>
                   )}
                 </div>

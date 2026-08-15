@@ -12,6 +12,9 @@ and quietly interrupts if anyone mentions feeding their dog chocolate.
 
 ## What it does
 
+- **Photos everywhere** — pick an image and it uploads, attaches to the draft
+  so it can carry a caption, and lands in every open window over the same
+  socket as text. Channels and DMs both.
 - **Channels and DMs over one WebSocket** — send and delivery share a single
   connection, so a message is in both windows before the sender's spinner
   would have finished.
@@ -26,6 +29,8 @@ and quietly interrupts if anyone mentions feeding their dog chocolate.
 ![#breed-talk, where Barkley does most of the talking](docs/03-breed-talk.png)
 
 ![A direct message with Barkley](docs/04-dm-barkley.png)
+
+![Sharing a photo in a direct message](docs/05-dm-photo.png)
 
 ## Stack
 
@@ -136,3 +141,15 @@ grapes gets a toxicity warning.
 `backend/app/assets/barkley.jpg` — "GoldenRetrieverPortrait.jpg" by Ltshears,
 via Wikimedia Commons, licensed
 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+
+The photos shared in the conversations in the screenshots above are from
+Wikimedia Commons:
+
+| Photo | By | Licence |
+| --- | --- | --- |
+| Jack Russell catching ball | Emery Way | CC BY 2.0 |
+| Labrador Retriever yellow swimming | MC Glasgow | CC BY 2.0 |
+| Puppy playing with a toy (Unsplash) | Justin Veenema | CC0 |
+| Shih Tzu puppy wonton chewing a (fake) bone | Jim Winstead | CC BY 2.0 |
+| Corgi-on-lawn | John Moodey | CC0 |
+| Dogs playfully wrestling on green grass | Shixart1985 | CC BY 2.0 |
