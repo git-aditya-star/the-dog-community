@@ -1,0 +1,64 @@
+@use '../abstracts/variables' as *;
+
+.msg {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: $radius-sm;
+
+  &:hover {
+    background: rgba(243, 235, 224, 0.5);
+  }
+
+  &--grouped {
+    padding-top: 0.1rem;
+  }
+
+  &__side {
+    width: 34px;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  // the timestamp takes the avatar's place on a grouped message,
+  // and only shows on hover so the column stays quiet
+  &__stamp {
+    font-size: 0.68rem;
+    color: $muted;
+    line-height: 1.6;
+    opacity: 0;
+  }
+
+  &:hover &__stamp {
+    opacity: 1;
+  }
+
+  &__main {
+    min-width: 0;
+  }
+
+  &__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  &__name {
+    font-family: $serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  &__time {
+    font-size: 0.72rem;
+    color: $muted;
+  }
+
+  &__body {
+    color: $ink;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+}

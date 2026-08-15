@@ -2,9 +2,8 @@ import { NavLink } from 'react-router-dom'
 
 import Avatar from './Avatar'
 import { useAuth } from '../auth'
-import { CHANNELS } from '../channels'
 
-export default function Sidebar() {
+export default function Sidebar({ channels }) {
   const { user, logout } = useAuth()
 
   return (
@@ -19,10 +18,10 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar__label">Channels</div>
-      {CHANNELS.map((c) => (
+      {channels.map((c) => (
         <NavLink
-          key={c.slug}
-          to={`/c/${c.slug}`}
+          key={c.id}
+          to={`/c/${c.name}`}
           className={({ isActive }) => `sidebar__link${isActive ? ' is-active' : ''}`}
         >
           <span className="sidebar__link-hash">#</span>
