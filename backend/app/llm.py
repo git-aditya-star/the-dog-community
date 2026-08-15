@@ -1,12 +1,21 @@
 import base64
 import json
 import re
+from pathlib import Path
 
 import httpx
 
 from app.config import settings
 
 TIMEOUT = 20.0
+
+MIME = {
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".png": "image/png",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+}
 
 VISION_PROMPT = (
     "This is a photo of someone's pet dog. Reply with JSON and nothing else, "
@@ -32,20 +41,24 @@ async def describe_dog(image: bytes, mime: str) -> tuple[str | None, str | None]
     return _parse(text)
 
 
-async def chat(prompt: str) -> str | None:
-    """One text completion.
+async def chat(prompt: str, image: bytes | None = None, mime: str = "") -> str | None:
+    """One completion, with a photo attached when there is one to look at.
 
     Never raises either: a dead provider means Barkley stays quiet, not a
     broken socket or a failed request.
     """
     try:
         if settings.gemini_api_key:
-            text = await _gemini(prompt)
+            text = await _gemini(prompt, image, mime)
         else:
-            text = await _ollama(prompt)
+            text = await _ollama(prompt, image)
     except Exception:
         return None
     return (text or "").strip() or None
+
+
+def mime_for(path: Path) -> str:
+    return MIME.get(path.suffix.lower(), "image/jpeg")
 
 
 def _parse(text: str) -> tuple[str | None, str | None]:

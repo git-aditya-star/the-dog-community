@@ -39,6 +39,39 @@
   margin-bottom: 0.9rem;
 }
 
+// the photo waiting on the draft, so a caption can go with it
+.pending {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+
+  img {
+    display: block;
+    height: 62px;
+    border: 1px solid $line;
+    border-radius: $radius-sm;
+  }
+
+  &__drop {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    line-height: 1;
+    border: 1px solid $line;
+    border-radius: 999px;
+    background: $card;
+    color: $muted;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+      color: $rust-dark;
+    }
+  }
+}
+
 .composer {
   display: flex;
   gap: 0.6rem;

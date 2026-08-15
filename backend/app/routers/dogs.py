@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app import barkley
 from app.db import get_db
-from app.llm import describe_dog
+from app.llm import describe_dog, mime_for
 from app.models import Dog, User
 from app.routers.uploads import UPLOAD_DIR
 from app.schemas import DogIn, DogOut
@@ -15,14 +15,6 @@ from app.security import current_user
 from app.ws import connections, send_to
 
 router = APIRouter(prefix="/api", tags=["dogs"])
-
-MIME = {
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".png": "image/png",
-    ".gif": "image/gif",
-    ".webp": "image/webp",
-}
 
 
 @router.get("/dogs", response_model=list[DogOut])
@@ -52,9 +44,7 @@ async def add_dog(
     if not path.is_file():
         raise HTTPException(status_code=400, detail="That photo is missing")
 
-    breed, notes = await describe_dog(
-        path.read_bytes(), MIME.get(path.suffix.lower(), "image/jpeg")
-    )
+    breed, notes = await describe_dog(path.read_bytes(), mime_for(path))
 
     dog = Dog(
         user_id=user.id,

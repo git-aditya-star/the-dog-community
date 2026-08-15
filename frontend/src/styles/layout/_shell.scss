@@ -48,6 +48,8 @@
 
 .pane__foot {
   padding: 1rem 1.6rem 1.4rem;
+  // opaque, so a pending photo does not sit over the last message
+  background: $paper;
 }
 
 .empty {

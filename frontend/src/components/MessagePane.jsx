@@ -15,6 +15,7 @@ export default function MessagePane({ channel }) {
   const [messages, setMessages] = useState([])
   const [typing, setTyping] = useState(false)
   const [draft, setDraft] = useState('')
+  const [pending, setPending] = useState(null)
   const [problem, setProblem] = useState('')
   const foot = useRef(null)
   const file = useRef(null)
@@ -25,6 +26,7 @@ export default function MessagePane({ channel }) {
     let stale = false
     setMessages([])
     setTyping(false)
+    setPending(null)
     api(`/api/channels/${channelId}/messages`, { token })
       .then((rows) => {
         if (!stale) setMessages(rows)
@@ -57,11 +59,15 @@ export default function MessagePane({ channel }) {
   const submit = (e) => {
     e.preventDefault()
     const body = draft.trim()
-    if (!body || !channelId) return
-    if (send({ type: 'send', channel_id: channelId, body })) setDraft('')
+    if ((!body && !pending) || !channelId) return
+    const frame = { type: 'send', channel_id: channelId, body, image_url: pending }
+    if (send(frame)) {
+      setDraft('')
+      setPending(null)
+    }
   }
 
-  // picking a file posts it straight away — no preview, no caption
+  // uploaded on pick, held on the draft, sent with whatever is typed
   const attach = async (e) => {
     const picked = e.target.files?.[0]
     e.target.value = ''
@@ -69,7 +75,7 @@ export default function MessagePane({ channel }) {
     setProblem('')
     try {
       const { url } = await upload(picked, token)
-      send({ type: 'send', channel_id: channelId, image_url: url })
+      setPending(url)
     } catch (err) {
       setProblem(err.message)
     }
@@ -153,6 +159,14 @@ export default function MessagePane({ channel }) {
 
       <footer className="pane__foot">
         {problem && <p className="composer__problem">{problem}</p>}
+        {pending && (
+          <div className="pending">
+            <img src={API_BASE + pending} alt="Ready to send" />
+            <button type="button" className="pending__drop" onClick={() => setPending(null)}>
+              ×
+            </button>
+          </div>
+        )}
         <form className="composer" onSubmit={submit}>
           <input
             ref={file}
