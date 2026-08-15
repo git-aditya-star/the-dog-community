@@ -5,6 +5,12 @@
   grid-template-columns: $sidebar-w 1fr $rail-w;
   height: 100%;
   background: $paper;
+
+  // grid items floor at min-content, so a tall column would otherwise
+  // push the whole page into a scrollbar instead of scrolling itself
+  > * {
+    min-height: 0;
+  }
 }
 
 .pane {
