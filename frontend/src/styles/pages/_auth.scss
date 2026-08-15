@@ -1,0 +1,37 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.auth {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.25rem;
+  background:
+    radial-gradient(60rem 30rem at 50% -10%, #fff 0%, rgba(255, 255, 255, 0) 70%),
+    $paper;
+}
+
+.auth__card {
+  @include card;
+  box-shadow: $shadow;
+  width: 100%;
+  max-width: 25rem;
+  padding: 2rem 1.9rem 1.7rem;
+}
+
+.auth__mark {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.auth__lede {
+  color: $muted;
+  margin: 0.4rem 0 1.4rem;
+}
+
+.auth__switch {
+  color: $muted;
+  font-size: 0.88rem;
+  text-align: center;
+  margin-top: 1rem;
+}

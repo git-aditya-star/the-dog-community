@@ -1,0 +1,22 @@
+@use 'variables' as *;
+
+@mixin card {
+  background: $card;
+  border: 1px solid $line;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+}
+
+@mixin focus-ring {
+  outline: none;
+  border-color: $rust;
+  box-shadow: 0 0 0 3px $rust-wash;
+}
+
+// Small caps label used for section headings in the chrome.
+@mixin eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}

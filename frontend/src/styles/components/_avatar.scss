@@ -1,0 +1,28 @@
+@use '../abstracts/variables' as *;
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: $serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: $bark-soft;
+  object-fit: cover;
+
+  &--lg {
+    width: 44px;
+    height: 44px;
+    font-size: 1.05rem;
+  }
+
+  // Barkley wears the rust ring so he reads as staff, not a stranger.
+  &--bot {
+    background: $rust;
+    box-shadow: 0 0 0 2px $paper, 0 0 0 4px $rust-wash;
+  }
+}

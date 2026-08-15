@@ -1,0 +1,91 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: $bark;
+  color: #f4ebe1;
+  padding: 1.2rem 0.85rem;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0 0.5rem 1.1rem;
+
+  &-mark {
+    font-size: 1.35rem;
+  }
+
+  &-name {
+    font-family: $serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+}
+
+.sidebar__label {
+  @include eyebrow;
+  color: rgba(244, 235, 225, 0.5);
+  padding: 0.9rem 0.6rem 0.45rem;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.6rem;
+  border-radius: $radius-sm;
+  color: rgba(244, 235, 225, 0.78);
+  text-decoration: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+  }
+
+  &.is-active {
+    background: $rust;
+    color: #fff;
+  }
+
+  &-hash {
+    opacity: 0.6;
+  }
+}
+
+.sidebar__me {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding: 0.7rem 0.6rem 0.2rem;
+  border-top: 1px solid rgba(244, 235, 225, 0.14);
+
+  &-name {
+    font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 1.2;
+  }
+
+  &-handle {
+    color: rgba(244, 235, 225, 0.5);
+    font-size: 0.78rem;
+  }
+}
+
+.sidebar__out {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin-left: auto;
+  color: rgba(244, 235, 225, 0.55);
+  font-size: 0.78rem;
+
+  &:hover {
+    color: #fff;
+  }
+}

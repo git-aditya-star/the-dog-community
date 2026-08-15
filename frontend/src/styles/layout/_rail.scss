@@ -1,0 +1,22 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  background: $paper-deep;
+  overflow-y: auto;
+  padding: 1.2rem 1.1rem;
+}
+
+.rail__head {
+  @include eyebrow;
+  color: $muted;
+  padding: 0 0.2rem 0.75rem;
+}
+
+.rail__note {
+  color: $muted;
+  font-size: 0.85rem;
+  padding: 0.2rem;
+}

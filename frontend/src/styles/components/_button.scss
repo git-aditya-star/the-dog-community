@@ -1,0 +1,36 @@
+@use '../abstracts/variables' as *;
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  padding: 0.6rem 1.1rem;
+  font-weight: 500;
+  background: $rust;
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: $rust-dark;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &--quiet {
+    background: none;
+    border: 0;
+    color: $rust;
+    padding: 0;
+    font-weight: 500;
+
+    &:hover {
+      background: none;
+      text-decoration: underline;
+    }
+  }
+}
