@@ -91,9 +91,10 @@ and every line Barkley says. It answers a photo in about 2.3 seconds, which is
 what makes breed detection something you can wait for on a form rather than a
 background job with a spinner.
 
-That speed is the reason vision runs exactly once. The breed and description
-are written to the dog row and read back as text forever after, so Barkley
-never does image work while someone is waiting on a reply.
+That speed is what makes a photo affordable on the reply path too. A dog's
+breed and description are computed once, written to the dog row and read back
+as text forever after; the only image Barkley re-opens when he answers is the
+newest photo in the conversation in front of him.
 
 An honest caveat: the app needs a key. Without one nothing breaks — dogs
 simply arrive with no breed and Barkley stays quiet — but the part worth
@@ -124,10 +125,12 @@ socket that delivers it. There is no POST-then-wait-for-echo, so there is no
 optimistic-update reconciliation to get wrong. Fan-out is a dictionary of
 connections: a public channel goes to everyone connected, a DM to two ids.
 
-**Vision runs once, at upload.** The breed and a short description are written
-to the dog row and cached forever, so Barkley never does image work on the hot
-path — he reads text that was computed minutes or weeks ago. Breed detection
-falls out of profile creation for free.
+**Vision runs once per dog, at upload.** The breed and a short description are
+written to the dog row and cached forever, so no profile is ever re-read — when
+Barkley talks about a dog he is reading text that was computed minutes or weeks
+ago. Breed detection falls out of profile creation for free. The one image that
+does ride along on a reply is the newest photo in the channel or DM, which is
+the next decision.
 
 **Barkley gets no vector store.** His context is the last ten messages plus a
 `SELECT` of every dog's name, breed and notes, pasted into the prompt. The
